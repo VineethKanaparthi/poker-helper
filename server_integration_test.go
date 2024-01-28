@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -31,14 +30,4 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	assertNoErrorWhileDecodingJson(err, t, response)
 	assertPlayers(got, []Player{{"Pepper", 3}}, t)
 
-}
-
-func newPostWinRequest(player string) *http.Request {
-	request, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/players/%s", player), nil)
-	return request
-}
-
-func newGetLeagueRequest() *http.Request {
-	request, _ := http.NewRequest(http.MethodGet, "/league", nil)
-	return request
 }

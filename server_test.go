@@ -93,7 +93,7 @@ func TestLeague(t *testing.T) {
 	server := NewPlayerServer(&store)
 
 	t.Run("it returns 200 on /league and gets players info", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodGet, "/league", nil)
+		request := newGetLeagueRequest()
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
@@ -113,9 +113,17 @@ func TestLeague(t *testing.T) {
 		}
 		err := json.NewDecoder(response.Body).Decode(&got)
 		assertStatus(response.Code, http.StatusOK, t)
+		assertJsonContentType(response, t)
 		assertNoErrorWhileDecodingJson(err, t, response)
 		assertPlayers(got, want, t)
 	})
+}
+
+func assertJsonContentType(response *httptest.ResponseRecorder, t testing.TB) {
+	t.Helper()
+	if response.Result().Header.Get("content-type") != "application/json" {
+		t.Errorf("response did not have content-type of application/json, got %v", response.Result().Header)
+	}
 }
 
 func assertNoErrorWhileDecodingJson(err error, t testing.TB, response *httptest.ResponseRecorder) {
@@ -152,5 +160,15 @@ func assertResponseBody(got string, want string, t testing.TB) {
 
 func newGetScoreRequest(name string) *http.Request {
 	request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/players/%s", name), nil)
+	return request
+}
+
+func newPostWinRequest(player string) *http.Request {
+	request, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/players/%s", player), nil)
+	return request
+}
+
+func newGetLeagueRequest() *http.Request {
+	request, _ := http.NewRequest(http.MethodGet, "/league", nil)
 	return request
 }
